@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <title>Ouija Robot</title>
+        <style>
+            body { background-color: black; color: white; }
+            .name { font-size: 20px; }
+            .message { font-size: 32px; }
+        </style>
+        <script>
+            function sock()
+            {
+                var name = document.getElementById('name');
+                var message = document.getElementById('message');
+                var socket = new WebSocket('ws://localhost:8080');
+                
+                socket.onopen = function(event) {
+                    console.log(event);
+                }
+
+                socket.onmessage = function(event) {
+                    var payload = JSON.parse(event.data);
+                    console.log(payload);
+                    if (payload.newmessage)
+                    {
+                        console.log("New message from" + payload.name);
+                        name.innerHTML = payload.name;
+                        message.innerHTML = "";
+                    }
+                    else
+                    {
+                        console.log("Letter: " + payload.letter);
+                        var l = payload.letter;
+                        if (l == "\n")
+                            l = "<br>";
+                        message.innerHTML += l;
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body onload="sock();">
+        <div id="name" class="name">
+            @nobody
+        </div>
+        <hr />
+        <div id="message" class="message">
+            Waiting for tweets...
+        </div>
+    </body>
+</html>

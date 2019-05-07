@@ -1,0 +1,17 @@
+#!/bin/bash
+
+source credentials
+
+xset s off
+xset -dpms
+xset s noblank
+
+mkfifo messages
+websocat -s 8080 <> messages &
+
+chromium-browser --start-fullscreen --app=file:///home/pi/index.html &
+sleep 20
+
+screen -dm -S robot /dev/ttyACM0 9600
+
+python stream.py
